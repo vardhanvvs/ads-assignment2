@@ -2,40 +2,43 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 #function for reading csv files
-def readfile(df_name,file_name):
-    '''
+def readfile(file_name):
+   '''
     
 
     Parameters
     ----------
-    df_name : pandas.DataFrame
-        creates a dataframe and performs manipulation on data.
     file_name : STR
-        takes input as csv file for creating a dataframe .
+        takes input as string as file name and creates a dataframe.
 
     Returns
     -------
-    df_name_new :  pandas.DataFrame
-        A new dataframe is returned after  performing manipulation on data.
+    df_name_new : Pandas.DataFrame
+        returns the dataframe after manipulating the data.
 
     '''
-    df_name=pd.read_csv(file_name)
-    df_name.index=df_name['Country Name']
+   #reading the data file
+   df_name=pd.read_csv(file_name)
+   
+   #changing the index to country Name
+   df_name.index=df_name['Country Name']
     
-    df_name_new=df_name.loc[["China","India","Australia","Spain",
+   #extracting the data that is required from the dataframe
+   df_name_new=df_name.loc[["China","India","Australia","Spain",
                 "United States","Germany","South Africa","Finland","Brazil"],
                                 ['1990','1995','2000','2005','2010','2014']]
 
-    return df_name_new
-
-#reading the data-world-bank csv files using above function 
-ele_per_cap=readfile('ele_per_cap','electricity_per_capita.csv')
-print(ele_per_cap)
-forest_sq_km=readfile('forest_sq_km','forest_sq.csv')
-total_pop=readfile('world_pop','total_pop.csv')
-n_oxide=readfile('n_oxide','n_oxide.csv')
-greenhouse_emission=readfile('greenhouse_emission','greenhouse.csv')
-urbanpopulation=readfile('urban_population','urbanpopulation.csv')
+   return df_name_new
+print(readfile('electricity_per_capita.csv'))
+#function for transposing the dataframe 
+def trans(df_name):
+    df_trans=df_name.transpose()
+    lst=list(df_trans.columns)
+    lst[0]='Year'
+    df_trans.columns=lst
+    return df_trans
+    
+ 
 
 #a function for creating bar-graphs 
 def bar_plot(df_name,title_name):
@@ -49,10 +52,7 @@ def bar_plot(df_name,title_name):
     title_name : STR
         graphs title name.
 
-    Returns
-    -------
-    None.
-
+    
     '''
     plt.figure(figsize=(8,6))
     ax=plt.subplot()
@@ -71,20 +71,11 @@ def bar_plot(df_name,title_name):
 
     ax.set_xticks([j+0.4 for j in range(len(x_ticks))])
     ax.set_xticklabels(x_ticks,rotation=45)
-    ax.legend()
+    ax.legend(bbox_to_anchor=(1,1),title='years')
     plt.title(title_name)
     plt.show()
  
-#calling the function forplotting bar graph for different dataframes    
- 
-bar_plot(total_pop,'Total Country Population')
-bar_plot(forest_sq_km,'Forest Area in Sq Km for Each Country')
-bar_plot(ele_per_cap,'Electric power consumption (kWh per capita)')
-bar_plot(greenhouse_emission,'Total greenhouse gas emissions (kt of CO2 \
-          equivalent)')
-bar_plot(n_oxide,'Nitrous oxide emissions (thousand metric tons of CO2\
-          equivalent)')
-bar_plot(urbanpopulation,'World Wide Urban Population ')
+
 
 
 # function  for correlation between columns of new dataframe 
@@ -139,6 +130,146 @@ def correlation(df_name,country_name):
     plt.show()
     return df_name
     
+
+
+#line plot 1
+
+#reading data frame using readfile function
+tubercolusis=pd.read_csv('tubercolusis.csv')
+
+#dropping the columns from the dataframe
+tubercolusis=tubercolusis.drop(['Country Code','Indicator Code',
+                                'Indicator Name'],axis=1)
+
+#renaming the column country name to year
+tubercolusis=tubercolusis.rename(columns = {'Country Name':'year'})
+
+#setting the column year as index 
+tubercolusis=tubercolusis.set_index('year')
+
+#transposing the dataframe using transpose function
+tubercolusis=tubercolusis.transpose()
+
+#manipulating the data of tuberculosis dataframe 
+#and storing it in new dataframe
+tubercolusis_new=tubercolusis.loc[['2000','2002','2004','2006','2008','2010',
+                '2012','2014','2016'],["China","India","Australia","Spain",
+                "United States","Germany","South Africa","Finland","Brazil"]]
+
+
+#exploring dataframe using .describre method
+print(tubercolusis_new.describe())
+
+#plotting the line graph using matplotlib.pyplot as plt
+plt.figure(figsize=(8,6))
+plt.plot(tubercolusis_new.index,tubercolusis_new['China'],marker='o',
+          label='China',linestyle='--')
+plt.plot(tubercolusis_new.index,tubercolusis_new['Australia'],marker='*',
+          label='Australia',linestyle='--')
+plt.plot(tubercolusis_new.index,tubercolusis_new['India'],marker='^',
+          label='India',linestyle='--')
+plt.plot(tubercolusis_new.index,tubercolusis_new['Spain'],
+          label='Spain',marker='p',linestyle='--')
+plt.plot(tubercolusis_new.index,tubercolusis_new['United States'],
+          label='United States',marker='o',linestyle='--')
+plt.plot(tubercolusis_new.index,tubercolusis_new['Germany'],
+          label='Germany',marker='+',linestyle='--')
+plt.plot(tubercolusis_new.index,tubercolusis_new['South Africa'],
+          label='South Africa',linestyle='--',marker='s')
+plt.plot(tubercolusis_new.index,tubercolusis_new['Finland'],
+          label='Finland',linestyle='--',marker='s')
+plt.plot(tubercolusis_new.index,tubercolusis_new['Brazil'],
+          label='Brazil',linestyle='--',marker='s')
+
+#labelling the x axis 
+plt.xlabel('Years')
+#labelling the y axis 
+plt.ylabel('Incidence of tuberculosis (per 100,000 people)')
+#setting the titile name
+plt.title('Incidence of tuberculosis (per 100,000 people)')
+#legend for labels
+plt.legend(bbox_to_anchor=(1,1),title='country')
+plt.show()
+
+
+#line plot 2
+#line plot for electricity_per_capita
+#reading data frame using readfile function
+ele_per_cap=pd.read_csv('electricity_per_capita.csv')
+
+#dropping the columns from the dataframe
+ele_per_cap=ele_per_cap.drop(['Country Code','Indicator Code',
+                               'Indicator Name'],axis=1)
+#renaming the column country name to year
+ele_per_cap=ele_per_cap.rename(columns = {'Country Name':'year'})
+#setting the column year as index
+ele_per_cap=ele_per_cap.set_index('year')
+#transposing the dataframe using transpose function
+ele_per_cap=ele_per_cap.transpose()
+
+#manipulating the data of tuberculosis dataframe 
+#and storing it in new dataframe
+ele_per_cap=ele_per_cap.loc[['1990','1995','2000','2005','2010','2014'],
+              ["China","India","Australia","Spain",
+            "United States","Germany","South Africa","Finland","Brazil"]]
+
+#exploring dataframe using .describre method
+print(ele_per_cap.describe())
+#plotting the line graph using matplotlib.pyplot as plt
+plt.figure(figsize=(8,6))
+plt.plot(ele_per_cap.index,ele_per_cap['China'],marker='o',
+          label='China',linestyle='--')
+plt.plot(ele_per_cap.index,ele_per_cap['Australia'],marker='*',
+          label='Australia',linestyle='--')
+plt.plot(ele_per_cap.index,ele_per_cap['India'],marker='^',
+          label='India',linestyle='--')
+plt.plot(ele_per_cap.index,ele_per_cap['Spain'],
+          label='Spain',marker='p',linestyle='--')
+plt.plot(ele_per_cap.index,ele_per_cap['United States'],
+          label='United States',marker='o',linestyle='--')
+plt.plot(ele_per_cap.index,ele_per_cap['Germany'],
+          label='Germany',marker='+',linestyle='--')
+plt.plot(ele_per_cap.index,ele_per_cap['South Africa'],
+          label='South Africa',linestyle='--',marker='s')
+plt.plot(ele_per_cap.index,ele_per_cap['Finland'],
+          label='Finland',linestyle='--',marker='s')
+plt.plot(ele_per_cap.index,ele_per_cap['Brazil'],
+          label='Brazil',linestyle='--',marker='s')
+
+#labelling the x axis 
+plt.xlabel('Years')
+#labelling the y axis
+plt.ylabel('Electric power consumption (kWh per capita)')
+#setting the titile name
+plt.title('Electric power consumption (kWh per capita)')
+#legend for labels
+plt.legend(bbox_to_anchor=(1,1),title='country')
+plt.show()
+
+#calling the above all functions
+
+#reading the data-world-bank csv files using above function 
+forest_sq_km=readfile('forest_sq.csv')
+total_pop=readfile('total_pop.csv')
+n_oxide=readfile('n_oxide.csv')
+greenhouse_emission=readfile('greenhouse.csv')
+urbanpopulation=readfile('urbanpopulation.csv')
+ele_per_cap=readfile('electricity_per_capita.csv')  
+print(ele_per_cap,urbanpopulation,greenhouse_emission,n_oxide,total_pop,
+      forest_sq_km) 
+
+
+#calling the function for plotting bar graph for different dataframes    
+ 
+bar_plot(total_pop,'Total Country Population')
+bar_plot(forest_sq_km,'Forest Area in Sq Km for Each Country')
+bar_plot(ele_per_cap,'Electric power consumption (kWh per capita)')
+bar_plot(greenhouse_emission,'Total greenhouse gas emissions (kt of CO2 \
+          equivalent)')
+bar_plot(n_oxide,'Nitrous oxide emissions (thousand metric tons of CO2\
+          equivalent)')
+bar_plot(urbanpopulation,'World Wide Urban Population ')
+
 #calling the function and
 #finding correlation between factors for different countries
 USA=correlation('USA','United States')
@@ -149,78 +280,12 @@ Finland=correlation('Finland','Finland')
 Brazil=correlation('Brazil','Brazil')
 print(USA,India,Finland,Germany,Spain)
 
-#line plots
-tubercolusis=pd.read_csv('tubercolusis.csv')
-tubercolusis=tubercolusis.drop(['Country Code','Indicator Code',
-                                'Indicator Name'],axis=1)
-tubercolusis=tubercolusis.rename(columns = {'Country Name':'year'})
-tubercolusis=tubercolusis.set_index('year')
-
-tubercolusis=tubercolusis.transpose()
-
-tubercolusis_new=tubercolusis.loc[['2000','2002','2004','2006','2008','2010',
-                                    '2012','2014','2016'],
-["China","India","Albania","Argentina","Ethiopia","Germany","South Africa",
-  "Finland","Iceland","Afghanistan",'Dominica','Pakistan']]
-
-#exploring dataframe using .describre method
-print(tubercolusis_new.describe())
-
-plt.figure(figsize=(8,6))
-plt.plot(tubercolusis_new.index,tubercolusis_new['China'],marker='o',
-          label='China',linestyle='--')
-plt.plot(tubercolusis_new.index,tubercolusis_new['Afghanistan'],marker='*',
-          label='Afghanistan',linestyle='--')
-plt.plot(tubercolusis_new.index,tubercolusis_new['India'],marker='^',
-          label='India',linestyle='--')
-plt.plot(tubercolusis_new.index,tubercolusis_new['Dominica'],
-          label='Dominica',marker='p',linestyle='--')
-plt.plot(tubercolusis_new.index,tubercolusis_new['Ethiopia'],
-          label='Ethiopia',marker='o',linestyle='--')
-plt.plot(tubercolusis_new.index,tubercolusis_new['Pakistan'],
-          label='Pakistan',marker='+',linestyle='--')
-plt.plot(tubercolusis_new.index,tubercolusis_new['Albania'],
-          label='Albania',linestyle='--',marker='s')
-
-plt.title('Incidence of tuberculosis (per 100,000 people)')
-plt.legend()
-plt.show()
-
-#line plot2
-pollution=pd.read_csv('pollution.csv',skiprows=4)
-pollution=pollution.drop(['Country Code','Indicator Code',
-                                'Indicator Name'],axis=1)
-pollution=pollution.rename(columns = {'Country Name':'year'})
-pollution=pollution.set_index('year')
-
-pollution=pollution.transpose()
-
-pollution_new=pollution.loc[['2000','2002','2004','2006','2008','2010',
-                                    '2012','2014','2016'],
-["China","India","Albania","Argentina","Ethiopia","Germany","South Africa",
-  "Finland","Iceland","Afghanistan",'Dominica','Pakistan']]
-
-#exploring dataframe using .describre method
-print(pollution_new.describe())
-
-plt.figure(figsize=(8,6))
-plt.plot(pollution_new.index,pollution_new['China'],marker='o',
-          label='China',linestyle='--')
-plt.plot(pollution_new.index,pollution_new['Afghanistan'],marker='*',
-          label='Afghanistan',linestyle='--')
-plt.plot(pollution_new.index,pollution_new['India'],marker='^',
-          label='India',linestyle='--')
-plt.plot(pollution_new.index,pollution_new['Dominica'],
-          label='Dominica',marker='p',linestyle='--')
-plt.plot(pollution_new.index,pollution_new['Ethiopia'],
-          label='Ethiopia',marker='o',linestyle='--')
-plt.plot(pollution_new.index,pollution_new['Pakistan'],
-          label='Pakistan',marker='+',linestyle='--')
-plt.plot(pollution_new.index,pollution_new['Albania'],
-          label='Albania',linestyle='--',marker='s')
-
-plt.title('Incidence of tuberculosis (per 100,000 people)')
-plt.legend()
-plt.show()
-
-
+#calling the transpose function and returns the transpose of dataframe
+ele_per_cap=trans(ele_per_cap)
+urbanpopulation=trans(urbanpopulation)
+greenhouse_emission=trans(greenhouse_emission)
+n_oxide=trans(n_oxide)
+total_pop=trans(total_pop)
+forest_sq_km=trans(forest_sq_km)
+print(ele_per_cap,urbanpopulation,greenhouse_emission,n_oxide,total_pop,
+      forest_sq_km)
