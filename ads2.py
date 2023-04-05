@@ -130,6 +130,17 @@ def correlation(df_name,country_name):
     plt.show()
     return df_name
     
+#using of groupby function
+nitrousoxide=pd.read_csv('n_oxide.csv')
+nitrousoxide_new=nitrousoxide[['Country Name','1990','1995','2000',
+                               '2005','2010']]
+#groupby country name and calculating mean and median of each year
+gby_mean=nitrousoxide_new.groupby('Country Name').mean()
+gby_median=nitrousoxide_new.groupby('Country Name').median()
+
+#returning the dataframe
+print(gby_mean)
+print(gby_median)
 
 
 #line plot 1
